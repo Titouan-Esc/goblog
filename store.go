@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS blog
 (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	title TEXT,
-	content TEXT
-	autho TEXT
+	content TEXT,
+	author TEXT
 )
 `
 
@@ -47,4 +47,15 @@ func (blog *dbBlog) Open() error {
 // ! Func Close() de notre BDD
 func (blog *dbBlog) Close() error {
 	return blog.db.Close()
+}
+
+// ! Func GetPosts()
+func (blog *dbBlog) GetPosts() ([]*Posts, error) {
+	var posts []*Posts
+
+	err := blog.db.Select(&posts, "SELECT * FROM blog")
+	if err != nil {
+		return posts, err
+	}
+	return posts, nil
 }
