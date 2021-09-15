@@ -23,9 +23,10 @@ func run() error {
 	}
 	defer srv.blog.Close()
 
+	http.HandleFunc("/", srv.serveHTTP)
 	log.Printf("Serving HTTP on, PORT 8080")
 
-	err = http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8000", nil)
 	if err != nil {
 		return err
 	}
