@@ -11,6 +11,8 @@ import (
 type Blog interface {
 	Open() error
 	Close() error
+
+	GetPosts() ([]*Posts, error)
 }
 
 type dbBlog struct {
