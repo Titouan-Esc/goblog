@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type jsonPosts struct {
@@ -43,6 +46,29 @@ func (s *server) handlePostsList() http.HandlerFunc {
 			resp[i] = mapPostsToJson(m)
 		}
 
+		s.respond(rw, r, resp, http.StatusOK)
+	}
+}
+
+func (s *server) handleOnePost() http.HandlerFunc {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		id, err := strconv.ParseInt(vars["id"], 10, 64)
+		if err != nil {
+			log.Printf("Ne peut parse l'id en int. err=%v\n", err)
+			s.respond(rw, r, nil, http.StatusBadRequest)
+			return
+		}
+
+		p, err := s.blog.GetPostById(id)
+		if err != nil {
+			log.Printf("Ne peut lire le post. err=%v\n", err)
+			s.respond(rw, r, nil, http.StatusInternalServerError)
+			return
+		}
+
+		var resp = mapPostsToJson(p)
 		s.respond(rw, r, resp, http.StatusOK)
 	}
 }

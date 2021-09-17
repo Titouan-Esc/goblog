@@ -40,3 +40,7 @@ func (s *server) respond(rw http.ResponseWriter, _ *http.Request, data interface
 		log.Printf("Ne peut être formaté en json. err=%v\n", err)
 	}
 }
+
+func (s *server) decode(rw http.ResponseWriter, r *http.Request, v interface{}) error {
+	return json.NewDecoder(r.Body).Decode(v)
+}

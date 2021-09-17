@@ -13,6 +13,7 @@ type Blog interface {
 	Close() error
 
 	GetPosts() ([]*Posts, error)
+	GetPostById(id int64) (*Posts, error)
 }
 
 type dbBlog struct {
@@ -58,4 +59,16 @@ func (blog *dbBlog) GetPosts() ([]*Posts, error) {
 		return posts, err
 	}
 	return posts, nil
+}
+
+// ! Func GetPostById
+func (blog *dbBlog) GetPostById(id int64) (*Posts, error) {
+	var post = &Posts{}
+
+	err := blog.db.Get(post, "SELECT * FROM blog WHERE id=$1", id)
+	if err != nil {
+		return post, nil
+	}
+
+	return post, nil
 }
