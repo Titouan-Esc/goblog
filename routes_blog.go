@@ -72,3 +72,39 @@ func (s *server) handleOnePost() http.HandlerFunc {
 		s.respond(rw, r, resp, http.StatusOK)
 	}
 }
+
+func (s *server) handleCreatePost() http.HandlerFunc {
+
+	type resquest struct {
+		Title   string `json:"title"`
+		Content string `json:"content"`
+		Author  string `json:"author"`
+	}
+
+	return func(rw http.ResponseWriter, r *http.Request) {
+		req := resquest{}
+		err := s.decode(rw, r, &req)
+		if err != nil {
+			log.Printf("Ne peut pars le contenu du post. err=%v\n", err)
+			s.respond(rw, r, nil, http.StatusBadRequest)
+			return
+		}
+
+		p := &Posts{
+			ID:      0,
+			Title:   req.Title,
+			Content: req.Content,
+			Author:  req.Author,
+		}
+
+		err = s.blog.CreatePost(p)
+		if err != nil {
+			log.Printf("Ne peut créer le post. err=%v\n", err)
+			s.respond(rw, r, nil, http.StatusInternalServerError)
+			return
+		}
+
+		var resp = mapPostsToJson(p)
+		s.respond(rw, r, resp, http.StatusOK)
+	}
+}

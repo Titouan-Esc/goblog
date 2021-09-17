@@ -14,6 +14,8 @@ type Blog interface {
 
 	GetPosts() ([]*Posts, error)
 	GetPostById(id int64) (*Posts, error)
+
+	CreatePost(p *Posts) error
 }
 
 type dbBlog struct {
@@ -71,4 +73,15 @@ func (blog *dbBlog) GetPostById(id int64) (*Posts, error) {
 	}
 
 	return post, nil
+}
+
+// ! Func CreatePost()
+func (blog *dbBlog) CreatePost(p *Posts) error {
+	res, err := blog.db.Exec("INSERT INTO blog (title, content, author) VALUES (?, ?, ?)", p.Title, p.Content, p.Author)
+	if err != nil {
+		return nil
+	}
+
+	p.ID, err = res.LastInsertId()
+	return err
 }
